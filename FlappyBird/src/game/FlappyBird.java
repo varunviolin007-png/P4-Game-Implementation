@@ -9,12 +9,13 @@ NOTE: This class is the metaphorical "main method" of your program,
 */
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 class FlappyBird extends Game {
 	static int counter = 0;
 	boolean gameOver = false;
   	Bird bird;
-  	Pipe pipe;
+  	ArrayList<Pipe> pipes = new ArrayList<Pipe>();
 
   public FlappyBird() {
 	super("FlappyBird",800,600);
@@ -34,7 +35,15 @@ class FlappyBird extends Game {
 	});
 	
     bird = new Bird();
-    pipe = new Pipe(600,250);
+    pipes.add(new Pipe(600,0));
+    pipes.add(new Pipe(900,0));
+    pipes.add(new Pipe(1200,0));
+    pipes.add(new Pipe(1500,0));
+
+    pipes.add(new Pipe(600,400));
+    pipes.add(new Pipe(900,400));
+    pipes.add(new Pipe(1200,400));
+    pipes.add(new Pipe(1500,400));
   }
   
   public class Bird {
@@ -97,14 +106,22 @@ class FlappyBird extends Game {
 	        30
 	    );
 
-	    Rectangle pipeBox = new Rectangle(
-	        (int)pipe.position.x,
-	        (int)pipe.position.y,
-	        pipe.width,
-	        pipe.height
-	    );
+	    for(Pipe p : pipes) {
 
-	    return birdBox.intersects(pipeBox);
+	        Rectangle pipeBox = new Rectangle(
+	            (int)p.position.x,
+	            (int)p.position.y,
+	            p.width,
+	            p.height
+	        );
+
+	        if(birdBox.intersects(pipeBox)) {
+	            return true;
+	        }
+
+	    }
+
+	    return false;
 	}
   
   public class Pipe {
@@ -120,7 +137,12 @@ class FlappyBird extends Game {
 
 
   	public void move() {
-  		position.x -= speed;
+
+  	    position.x -= 3;
+
+  	    if(position.x < -width) {
+  	        position.x = 800;   // send pipe back to the right side
+  	    }
   	}
 
 
@@ -140,11 +162,15 @@ class FlappyBird extends Game {
     	
         if(!gameOver) {
             bird.fall();
-            pipe.move();
+            for(Pipe p : pipes) {
+                p.move();
+            }
         }
     	
     	bird.draw(brush);
-        pipe.draw(brush);
+    	for(Pipe p : pipes) {
+            p.draw(brush);
+        }
     	
         if(checkCollision()) {
         	gameOver = true;
@@ -152,9 +178,6 @@ class FlappyBird extends Game {
             brush.drawString("GAME OVER", width/2, height/2);
         }
         
-    	counter++;
-    	brush.setColor(Color.white);
-    	brush.drawString("Counter is " + counter,10,10);
   }
   
 	public static void main (String[] args) {
