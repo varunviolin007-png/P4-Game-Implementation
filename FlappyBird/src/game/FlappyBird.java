@@ -40,7 +40,7 @@ class FlappyBird extends Game {
   }
   
 	public static void main (String[] args) {
-   		YourGameName a = new YourGameName();
+   		FlappyBird a = new FlappyBird();
 		a.repaint();
   }
 }
