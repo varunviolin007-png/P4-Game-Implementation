@@ -12,11 +12,29 @@ import java.awt.event.*;
 
 class FlappyBird extends Game {
 	static int counter = 0;
+	boolean gameOver = false;
+  	Bird bird;
+  	Pipe pipe;
 
   public FlappyBird() {
 	super("FlappyBird",800,600);
     this.setFocusable(true);
 	this.requestFocus();
+	
+	this.addKeyListener(new KeyAdapter() {
+
+	    public void keyPressed(KeyEvent e) {
+
+	        if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+	            bird.jump();
+	        }
+
+	    }
+
+	});
+	
+    bird = new Bird();
+    pipe = new Pipe(600,250);
   }
   
   public class Bird {
@@ -24,9 +42,20 @@ class FlappyBird extends Game {
 	    Point position;
 	    double wingAngle = 0;
 	    boolean wingUp = true;
+	    double velocity = 0;
+	    double gravity = 9.8;
 
 	    public Bird() {
 	        position = new Point(200,300);
+	    }
+	    
+	    public void jump() {
+	        velocity = -4.9;  
+	    }
+	    
+	    public void fall() {
+	        velocity += gravity * 0.016;
+	        position.y += velocity;
 	    }
 
 	    public void update() {
@@ -56,6 +85,26 @@ class FlappyBird extends Game {
 	        g2.rotate(-Math.toRadians(wingAngle));
 	        g2.translate(-(position.x + 15), -(position.y + 15));
 	    }
+	    
+	}
+  
+  public boolean checkCollision() {
+
+	    Rectangle birdBox = new Rectangle(
+	        (int)bird.position.x,
+	        (int)bird.position.y,
+	        30,
+	        30
+	    );
+
+	    Rectangle pipeBox = new Rectangle(
+	        (int)pipe.position.x,
+	        (int)pipe.position.y,
+	        pipe.width,
+	        pipe.height
+	    );
+
+	    return birdBox.intersects(pipeBox);
 	}
   
   public class Pipe {
@@ -88,6 +137,21 @@ class FlappyBird extends Game {
     	// sample code for printing message for debugging
     	// counter is incremented and this message printed
     	// each time the canvas is repainted
+    	
+        if(!gameOver) {
+            bird.fall();
+            pipe.move();
+        }
+    	
+    	bird.draw(brush);
+        pipe.draw(brush);
+    	
+        if(checkCollision()) {
+        	gameOver = true;
+            brush.setColor(Color.red);
+            brush.drawString("GAME OVER", width/2, height/2);
+        }
+        
     	counter++;
     	brush.setColor(Color.white);
     	brush.drawString("Counter is " + counter,10,10);
