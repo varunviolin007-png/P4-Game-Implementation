@@ -19,6 +19,14 @@ class FlappyBird extends Game {
 	this.requestFocus();
   }
   
+  public class Bird {
+	   
+  }
+  
+  public class Pipe {
+	  
+  }
+  
 	public void paint(Graphics brush) {
     	brush.setColor(Color.black);
     	brush.fillRect(0,0,width,height);
